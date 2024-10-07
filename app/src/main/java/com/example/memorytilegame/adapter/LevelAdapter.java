@@ -9,7 +9,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
+import android.media.Image;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
@@ -19,9 +19,12 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.memorytilegame.R;
@@ -29,6 +32,9 @@ import com.example.memorytilegame.SharedPreferencesHelper;
 import com.example.memorytilegame.levels.GameActivity;
 import com.example.memorytilegame.levels.LevelsScreen;
 
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
@@ -39,14 +45,11 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> 
     RecyclerView recyclerView;
     ImageView winGame, pauseGame;
     TextView timerTextView;
-    Stack<Integer> imgStack = new Stack<>();
-    Stack<ImageView> imgOfBlock = new Stack<>();
+    Stack <Integer> imgStack = new Stack<Integer>();
+    Stack <ImageView> imgOfBlock = new Stack<ImageView>();
     private SharedPreferencesHelper sharedPreferencesHelper;
     int noOfCols;
     int top = 0, count = 0;
-    private MediaPlayer successSound;
-    private MediaPlayer failureSound;
-
     public LevelAdapter(Context context, List<Integer> animalList, RecyclerView recyclerView, ImageView winGame, int noOfCols, TextView timerTextView, ImageView pauseGame) {
         this.context = context;
         this.animalList = animalList;
@@ -55,11 +58,6 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> 
         this.pauseGame = pauseGame;
         this.noOfCols = noOfCols;
         this.timerTextView = timerTextView;
-
-        // Initialize MediaPlayers for sounds
-        successSound = MediaPlayer.create(context, R.raw.success_sound);
-        failureSound = MediaPlayer.create(context, R.raw.failure_sound);
-
         Collections.shuffle(animalList);
         sharedPreferencesHelper = new SharedPreferencesHelper(context);
     }
@@ -74,13 +72,15 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ViewGroup.LayoutParams layoutParams = holder.cardView.getLayoutParams();
-        if (noOfCols == 5) {
+        if(noOfCols == 5){
             layoutParams.height = 164;
             layoutParams.width = 164;
-        } else if (noOfCols == 4) {
+        }
+        else if(noOfCols == 4){
             layoutParams.height = 200;
             layoutParams.width = 200;
-        } else {
+        }
+        else{
             layoutParams.height = 250;
             layoutParams.width = 250;
         }
@@ -93,13 +93,14 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> 
                 startAnimation(view);
 
                 top++;
-                if (top < 3) {
+                if(top < 3){
                     holder.imgBlock.setImageResource(animalList.get(holder.getAdapterPosition()));
                     holder.imgBlock.setEnabled(false);
                     imgStack.push(animalList.get(holder.getAdapterPosition()));
                     imgOfBlock.push(holder.imgBlock);
                 }
-                if (top == 2) {
+                if(top == 2){
+                    // Will Now get the drawable and imageview to check the similarity;
                     int img1 = imgStack.pop();
                     int img2 = imgStack.pop();
                     ImageView imageView2 = imgOfBlock.pop();
@@ -107,9 +108,9 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> 
                     imageView1.setEnabled(true);
                     imageView2.setEnabled(true);
 
-                    if (img1 == img2) {
+                    // If the drawables popped are equal, set invisible the imageview and hence increment the count;
+                    if(img1 == img2) {
                         count++;
-                        successSound.start();  // Play success sound
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -118,15 +119,17 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> 
                                     imageView1.setVisibility(View.INVISIBLE);
                                     top = 0;
 
-                                    if (count == getItemCount() / 2) {
+                                    if(count == getItemCount() / 2){
                                         Log.d("jeet gaya tu", ":wi hogaye ");
                                         winGame();
                                     }
                                 }
                             }, 1000);
                         }
-                    } else {
-                        failureSound.start();  // Play failure sound
+                    }
+
+                    // If drawables are not equal set their images back to the box they were;
+                    else {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -139,6 +142,8 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> 
                         }
                     }
                 }
+
+
             }
         });
     }
@@ -148,7 +153,8 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> 
         return animalList.size();
     }
 
-    public void startAnimation(View v) {
+    // On touching the block it should shrink and get back to original form;
+    public void startAnimation(View v){
         v.animate()
                 .scaleX(0.85f)
                 .scaleY(0.85f)
@@ -164,7 +170,7 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> 
                 }).start();
     }
 
-    public void winGame() {
+    public void winGame(){
         recyclerView.setVisibility(GONE);
         winGame.setVisibility(View.VISIBLE);
         pauseGame.setVisibility(GONE);
@@ -201,18 +207,22 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> 
         if (getHighscore == null) {
             highestScore.setText("Highest Score " + score);
             newHighScore.setVisibility(View.VISIBLE);
+
             saveHighestScore(noOfCols, score);
-        } else {
-            if (convertToTimestamp(score) < convertToTimestamp(getHighscore)) {
+        }
+        else {
+            if(convertToTimestamp(score) < convertToTimestamp(getHighscore)){
                 newHighScore.setVisibility(View.VISIBLE);
                 highestScore.setText("Highest Score " + score);
+
                 saveHighestScore(noOfCols, score);
-            } else {
+                //sharedPreferencesHelper.saveString(score);
+            }
+            else{
                 highestScore.setText("Highest Score " + getHighscore);
                 newHighScore.setVisibility(GONE);
             }
         }
-
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -227,54 +237,49 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> 
                         dialog.dismiss();
                     }
                 }, 100);
+
             }
         });
     }
 
     public long convertToTimestamp(String timeString) {
+        // Split the string by the colon (":") delimiter
         String[] timeComponents = timeString.split(":");
+
+        // Parse minutes, seconds, and milliseconds
         int minutes = Integer.parseInt(timeComponents[0]);
         int seconds = Integer.parseInt(timeComponents[1]);
         int milliseconds = Integer.parseInt(timeComponents[2]);
+
+        // Convert each component to milliseconds
         long totalMilliseconds = (minutes * 60 * 1000) + (seconds * 1000) + milliseconds;
+
         return totalMilliseconds;
     }
 
     public String getHighScoreAccToLevel(int noOfCols) {
-        if (noOfCols == 3) return sharedPreferencesHelper.getHighestScoreLevel1();
-        if (noOfCols == 4) return sharedPreferencesHelper.getHighestScoreLevel2();
-        if (noOfCols == 5) return sharedPreferencesHelper.getHighestScoreLevel3();
+        if(noOfCols == 3) return sharedPreferencesHelper.getHighestScoreLevel1();
+        if(noOfCols == 4) return sharedPreferencesHelper.getHighestScoreLevel2();
+        if(noOfCols == 5) return sharedPreferencesHelper.getHighestScoreLevel3();
         else return null;
     }
 
     public void saveHighestScore(int noOfCols, String score) {
-        if (noOfCols == 3) sharedPreferencesHelper.saveHighestScoreLevel1(score);
-        if (noOfCols == 4) sharedPreferencesHelper.saveHighestScoreLevel2(score);
-        if (noOfCols == 5) sharedPreferencesHelper.saveHighestScoreLevel3(score);
+        if(noOfCols == 3) sharedPreferencesHelper.saveHighestScoreLevel1(score);
+        if(noOfCols == 4) sharedPreferencesHelper.saveHighestScoreLevel2(score);
+        if(noOfCols == 5) sharedPreferencesHelper.saveHighestScoreLevel3(score);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder{
         ImageView imgBlock;
         CardView cardView;
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+
             imgBlock = itemView.findViewById(R.id.imgBlock);
             cardView = itemView.findViewById(R.id.cardView);
-        }
-    }
 
-    @Override
-    public void onViewRecycled(@NonNull ViewHolder holder) {
-        super.onViewRecycled(holder);
-        // Release MediaPlayers when no longer needed
-        if (successSound != null) {
-            successSound.release();
-            successSound = null;
-        }
-        if (failureSound != null) {
-            failureSound.release();
-            failureSound = null;
         }
     }
 }
+
