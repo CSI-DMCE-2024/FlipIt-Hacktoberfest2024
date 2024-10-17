@@ -50,7 +50,8 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> 
     private SharedPreferencesHelper sharedPreferencesHelper;
     int noOfCols;
     int top = 0, count = 0;
-    public LevelAdapter(Context context, List<Integer> animalList, RecyclerView recyclerView, ImageView winGame, int noOfCols, TextView timerTextView, ImageView pauseGame) {
+    String playerName;
+    public LevelAdapter(Context context, List<Integer> animalList, RecyclerView recyclerView, ImageView winGame, int noOfCols, TextView timerTextView, ImageView pauseGame, String playerName) {
         this.context = context;
         this.animalList = animalList;
         this.recyclerView = recyclerView;
@@ -58,6 +59,7 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> 
         this.pauseGame = pauseGame;
         this.noOfCols = noOfCols;
         this.timerTextView = timerTextView;
+        this.playerName = playerName;
         Collections.shuffle(animalList);
         sharedPreferencesHelper = new SharedPreferencesHelper(context);
     }
@@ -196,10 +198,11 @@ public class LevelAdapter extends RecyclerView.Adapter<LevelAdapter.ViewHolder> 
         dialog.show();
 
         Button btnDone = dialog.findViewById(R.id.btnDone);
+        TextView congratsMessage = dialog.findViewById(R.id.congratsMessage);
         TextView yourScore = dialog.findViewById(R.id.yourScore);
         TextView highestScore = dialog.findViewById(R.id.highestScore);
         TextView newHighScore = dialog.findViewById(R.id.newHighScore);
-
+        congratsMessage.setText("Congratulations " + playerName + "!");
         yourScore.setText("Your score " + score);
 
         String getHighscore = getHighScoreAccToLevel(noOfCols);
