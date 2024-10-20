@@ -1,26 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/splashScreenAnim"
     android:layout_width="match_parent"
+    android:background="#001739"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:gravity="center"
     app:layoutDescription="@xml/activity_splash_screen_scene"
-    tools:context=".SplashScreen"
-    android:backgroundTint="#F9F9F9">
+    tools:context=".SplashScreen">
 
     <ImageView
         android:id="@+id/imageView"
+        android:layout_width="5dp"
+        android:layout_height="5dp"
+        android:src="@drawable/app_logo"/>
+
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:alpha="0.2"
-        android:scaleX="0.5"
-        android:scaleY="0.5"
-        android:src="@drawable/splash_screen"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:fontFamily="@font/architects_daughter"
+        android:textStyle="bold"
+        android:textSize="46sp"
+        android:textColor="@color/white"
+        android:text="FLIP IT"/>
+
 </androidx.constraintlayout.motion.widget.MotionLayout>

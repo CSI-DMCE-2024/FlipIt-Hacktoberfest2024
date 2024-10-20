@@ -3,10 +3,12 @@ package com.example.memorytilegame;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.motion.widget.MotionLayout;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
+@SuppressLint("CustomSplashScreen")
 public class SplashScreen extends AppCompatActivity {
 
     private MotionLayout motionLayout;
