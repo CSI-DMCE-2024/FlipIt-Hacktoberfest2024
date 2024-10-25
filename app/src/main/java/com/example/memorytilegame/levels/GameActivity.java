@@ -54,6 +54,7 @@ public class GameActivity extends AppCompatActivity {
         Intent intent = getIntent();
         int noOfCols = intent.getIntExtra("noOfColumns", 0);
         int index = intent.getIntExtra("index", 0);
+        String playerName = intent.getStringExtra("playerName");
 
         startCountdown();
 
@@ -74,7 +75,7 @@ public class GameActivity extends AppCompatActivity {
                 R.drawable.i14, R.drawable.i14,
                 R.drawable.i15, R.drawable.i15);
 
-        LevelAdapter adapter = new LevelAdapter(this, arrayList.subList(0, index), recyclerView, winGame, noOfCols, timerTextView, pause);
+        LevelAdapter adapter = new LevelAdapter(this, arrayList.subList(0, index), recyclerView, winGame, noOfCols, timerTextView, pause, playerName);
         recyclerView.setLayoutManager(new GridLayoutManager(this, noOfCols));
         recyclerView.setAdapter(adapter);
 
